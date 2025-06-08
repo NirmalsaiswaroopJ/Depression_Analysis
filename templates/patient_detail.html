@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ patient.full_name }} - Patient Details</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.125);
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0,0,0,0.125);
+            padding: 15px 20px;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.25rem;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+        }
+        
+        .table th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            padding: 12px;
+        }
+        
+        .table td {
+            padding: 12px;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+        }
+        
+        .badge-primary { background-color: #007bff; color: white; }
+        .badge-success { background-color: #28a745; color: white; }
+        .badge-warning { background-color: #ffc107; color: #212529; }
+        .badge-danger { background-color: #dc3545; color: white; }
+        .badge-purple { background-color: #6f42c1; color: white; }
+        .badge-orange { background-color: #fd7e14; color: white; }
+        .badge-secondary { background-color: #6c757d; color: white; }
+        
+        .table-danger { background-color: rgba(220, 53, 69, 0.1); }
+        .bg-danger { background-color: #dc3545 !important; }
+        .text-white { color: white !important; }
+        .border-danger { border-color: #dc3545 !important; }
+        .text-center { text-align: center; }
+        .mt-3 { margin-top: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .ml-1 { margin-left: 0.25rem; }
+        .pl-4 { padding-left: 1.5rem; }
+        .table-responsive { overflow-x: auto; }
+        .list-unstyled { padding-left: 0; list-style: none; }
+        .btn { 
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            margin-bottom: 0;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+        .btn-secondary {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mb-4">
+            <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-secondary">&larr; Back to Dashboard</a>
+        </div>
+
+        <!-- Patient Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">Patient Details: {{ patient.full_name or 'N/A' }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> {{ patient.email }}</p>
+                        <p><strong>Username:</strong> {{ patient.username }}</p>
+                        <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Registered:</strong> {{ patient.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>Total Assessments:</strong> {{ assessments|length }}</p>
+                        {% if assessments %}
+                            <p><strong>Last Assessment:</strong> {{ assessments[0].created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if assessments %}
+            <!-- Summary Statistics -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Assessment Summary (Last 30 Days)</h3>
+                </div>
+                <div class="card-body">
+                    {% set recent_assessments = [] %}
+                    {% for assessment in assessments %}
+                        {% if (now - assessment.created_at).days <= 30 %}
+                            {% set _ = recent_assessments.append(assessment) %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="stat-value">{{ recent_assessments|length }}</div>
+                            <div class="stat-label">Recent Assessments</div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            {% set avg_score = (recent_assessments|sum(attribute='depression_score') / recent_assessments|length) if recent_assessments else 0 %}
+                            <div class="stat-value" style="color: {% if avg_score > 60 %}#dc3545{% elif avg_score > 40 %}#fd7e14{% elif avg_score > 20 %}#ffc107{% else %}#28a745{% endif %};">
+                                {{ "%.1f"|format(avg_score) }}
+                            </div>
+                            <div class="stat-label">Average Depression Score</div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            {% set high_risk = recent_assessments|selectattr('depression_severity', 'in', ['Moderately Severe', 'Severe'])|list|length %}
+                            <div class="stat-value" style="color: {% if high_risk > 0 %}#dc3545{% else %}#28a745{% endif %};">{{ high_risk }}</div>
+                            <div class="stat-label">High-Risk Assessments</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessment History -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Complete Assessment History</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Dominant Emotion</th>
+                                    <th>Depression Severity</th>
+                                    <th>Score</th>
+                                    <th>Image Quality</th>
+                                    <th>Top Emotions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assessment in assessments %}
+                                    <tr class="{% if assessment.depression_severity in ['Moderately Severe', 'Severe'] %}table-danger{% endif %}">
+                                        <td>
+                                            {{ assessment.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                            {% if assessment.depression_severity in ['Moderately Severe', 'Severe'] %}
+                                                <span class="badge badge-danger ml-1">High Risk</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-primary">
+                                                {{ assessment.dominant_emotion.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% set severity_color = {
+                                                'Minimal/None': 'success',
+                                                'Mild': 'warning',
+                                                'Moderate': 'orange',
+                                                'Moderately Severe': 'danger',
+                                                'Severe': 'purple'
+                                            } %}
+                                            <span class="badge badge-{{ severity_color.get(assessment.depression_severity, 'secondary') }}">
+                                                {{ assessment.depression_severity }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong>{{ "%.1f"|format(assessment.depression_score) }}</strong>/100
+                                        </td>
+                                        <td>
+                                            {{ assessment.image_quality }}
+                                        </td>
+                                        <td>
+                                            {% set emotion_scores = assessment.emotion_scores if assessment.emotion_scores else {} %}
+                                            {% if emotion_scores %}
+                                                {% if emotion_scores is mapping %}
+                                                    {% set sorted_emotions = emotion_scores.items()|list|sort(attribute='1', reverse=True) %}
+                                                    {% for emotion, score in sorted_emotions[:3] %}
+                                                        <div>{{ emotion.title() }}: {{ "%.0f"|format(score) }}%</div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <!-- Handle if emotion_scores is not a dict -->
+                                                    <div>Data format issue</div>
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinical Notes Section -->
+            {% set high_risk_assessments = assessments|selectattr('depression_severity', 'in', ['Moderately Severe', 'Severe'])|list %}
+            {% if high_risk_assessments %}
+                <div class="card border-danger mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="card-title">⚠️ Clinical Attention Required</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            This patient has <strong>{{ high_risk_assessments|length }}</strong> high-risk assessment(s) 
+                            indicating "Moderately Severe" or "Severe" depression symptoms.
+                        </p>
+                        <div class="mt-3">
+                            <h5>Recommended Actions:</h5>
+                            <ul class="pl-4">
+                                <li>Schedule immediate follow-up consultation</li>
+                                <li>Assess for suicide risk and safety planning</li>
+                                <li>Consider referral to mental health specialist</li>
+                                <li>Discuss treatment options (therapy, medication)</li>
+                                <li>Provide crisis support resources</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">No Assessment History</h3>
+                </div>
+                <div class="card-body">
+                    <p>This patient has not completed any assessments yet.</p>
+                    <p class="mt-2">Encourage the patient to:</p>
+                    <ul class="pl-4">
+                        <li>Log into their patient portal</li>
+                        <li>Complete their first facial emotion assessment</li>
+                        <li>Establish a baseline for monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Resources Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Patient Resources & Contact</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Crisis Resources</h5>
+                        <ul class="list-unstyled">
+                            <li><strong>988 Suicide & Crisis Lifeline:</strong> Call or text 988</li>
+                            <li><strong>Crisis Text Line:</strong> Text HOME to 741741</li>
+                            <li><strong>Emergency:</strong> Call 911</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Follow-up Actions</h5>
+                        <p>Contact patient at: <strong>{{ patient.email }}</strong></p>
+                        <p>Consider scheduling regular check-ins for ongoing monitoring.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

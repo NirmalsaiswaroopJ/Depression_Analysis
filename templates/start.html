@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Start Assessment - Depression Assessment System{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+    <h1>Facial Emotion Assessment</h1>
+    <p class="mt-2 mb-2">
+        This assessment will analyze your facial expressions to provide insights into your emotional well-being.
+        Please ensure you are in a well-lit environment and look directly at the camera.
+    </p>
+    
+    <div class="mt-2">
+        <div style="position: relative; display: inline-block;">
+            <video id="video" width="400" height="300" autoplay style="border: 2px solid #667eea; border-radius: 8px;"></video>
+            <canvas id="canvas" width="400" height="300" style="display: none;"></canvas>
+        </div>
+    </div>
+    
+    <div class="mt-2">
+        <button id="captureBtn" class="btn">Capture & Analyze</button>
+        <button id="retakeBtn" class="btn btn-secondary" style="display: none;">Retake Photo</button>
+    </div>
+    
+    <div id="status" class="mt-2" style="min-height: 20px;"></div>
+    
+    <div class="mt-2" style="background-color: #d1ecf1; padding: 1rem; border-radius: 4px; border-left: 4px solid #bee5eb;">
+        <h4>Instructions:</h4>
+        <ul style="text-align: left; margin-left: 1.5rem;">
+            <li>Position yourself facing the camera directly</li>
+            <li>Ensure good lighting on your face</li>
+            <li>Maintain a neutral, relaxed expression</li>
+            <li>Click "Capture & Analyze" when ready</li>
+        </ul>
+    </div>
+    
+    <div class="mt-2" style="background-color: #fff3cd; padding: 1rem; border-radius: 4px; border-left: 4px solid #ffc107;">
+        <p><strong>Privacy Notice:</strong> Your image is processed locally and used only for emotion analysis. No images are permanently stored.</p>
+    </div>
+</div>
+
+<script>
+let video = document.getElementById('video');
+let canvas = document.getElementById('canvas');
+let captureBtn = document.getElementById('captureBtn');
+let retakeBtn = document.getElementById('retakeBtn');
+let status = document.getElementById('status');
+let ctx = canvas.getContext('2d');
+
+// Initialize camera
+navigator.mediaDevices.getUserMedia({ 
+    video: { 
+        width: 400, 
+        height: 300,
+        facingMode: 'user'
+    } 
+})
+.then(stream => {
+    video.srcObject = stream;
+    status.innerHTML = '<span style="color: #28a745;">Camera ready! Position yourself and click capture.</span>';
+})
+.catch(err => {
+    console.error('Camera error:', err);
+    status.innerHTML = '<span style="color: #dc3545;">Camera access denied. Please allow camera access and refresh.</span>';
+    captureBtn.disabled = true;
+});
+
+captureBtn.addEventListener('click', function() {
+    // Draw video frame to canvas
+    ctx.drawImage(video, 0, 0, 400, 300);
+    
+    // Convert canvas to base64
+    let imageData = canvas.toDataURL('image/png');
+    
+    // Show loading status
+    status.innerHTML = '<span style="color: #667eea;">Analyzing your facial expression... Please wait.</span>';
+    captureBtn.disabled = true;
+    captureBtn.textContent = 'Analyzing...';
+    
+    // Send to server for analysis
+    fetch('/capture', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            image: imageData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            status.innerHTML = '<span style="color: #28a745;">Analysis complete! Redirecting to results...</span>';
+            setTimeout(() => {
+                window.location.href = '/result';
+            }, 1500);
+        } else {
+            status.innerHTML = '<span style="color: #dc3545;">Error: ' + data.message + '</span>';
+            captureBtn.disabled = false;
+            captureBtn.textContent = 'Capture & Analyze';
+            retakeBtn.style.display = 'inline-block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        status.innerHTML = '<span style="color: #dc3545;">Network error. Please try again.</span>';
+        captureBtn.disabled = false;
+        captureBtn.textContent = 'Capture & Analyze';
+        retakeBtn.style.display = 'inline-block';
+    });
+});
+
+retakeBtn.addEventListener('click', function() {
+    // Reset UI
+    captureBtn.disabled = false;
+    captureBtn.textContent = 'Capture & Analyze';
+    retakeBtn.style.display = 'none';
+    status.innerHTML = '<span style="color: #28a745;">Ready for capture.</span>';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Depression Assessment System{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 2rem auto;">
+    <h2 class="text-center mb-2">Login</h2>
+    
+    <form action="{{ url_for('login') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <div class="form-group text-center">
+            <button type="submit" class="btn">Login</button>
+        </div>
+    </form>
+    
+    <div class="text-center mt-2">
+        <p>Don't have an account? <a href="{{ url_for('register_page') }}">Register here</a></p>
+    </div>
+    
+    <div class="mt-2" style="background-color: #e9ecef; padding: 1rem; border-radius: 4px;">
+        <h4>Demo Accounts:</h4>
+        <p><strong>Doctor:</strong> Username: admin, Password: admin123</p>
+        <p><strong>Patient:</strong> Register as a new patient</p>
+    </div>
+</div>
+{% endblock %}

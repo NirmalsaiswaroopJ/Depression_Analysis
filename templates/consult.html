@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consult a Doctor</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      font-weight: 300;
+    }
+    
+    .header-icon {
+      text-align: center;
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+    
+    .intro {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      border-left: 4px solid #2196f3;
+    }
+    
+    .consultation-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .option-card {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 2px solid transparent;
+    }
+    
+    .option-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-color: #007bff;
+    }
+    
+    .option-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    
+    .option-title {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .option-description {
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .emergency-section {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 30px 0;
+      text-align: center;
+    }
+    
+    .emergency-section h3 {
+      color: #d32f2f;
+      margin-top: 0;
+    }
+    
+    .crisis-resources {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .resource-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .resource-item {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 3px solid #28a745;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 15px 25px;
+      margin: 10px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(45deg, #007bff, #0056b3);
+      color: white;
+    }
+    
+    .btn-success {
+      background: linear-gradient(45deg, #28a745, #1e7e34);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(45deg, #dc3545, #c82333);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(45deg, #6c757d, #545b62);
+      color: white;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .contact-info {
+      background: #e8f5e8;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    
+    .contact-info strong {
+      color: #2e7d32;
+    }
+    
+    .disclaimer {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-icon">👨‍⚕️</div>
+    <h1>Professional Mental Health Support</h1>
+    
+    <div class="intro">
+      <h3>🌟 Your Mental Health Matters</h3>
+      <p>Based on your mood assessment, you may benefit from speaking with a mental health professional. Here are various ways to get the support you need.</p>
+    </div>
+    
+    <div class="emergency-section">
+      <h3>🚨 Emergency Support</h3>
+      <p><strong>If you're having thoughts of self-harm or suicide, please seek immediate help:</strong></p>
+      <div class="contact-info">
+        <strong>National Suicide Prevention Lifeline (US):</strong> 988<br>
+        <strong>Crisis Text Line:</strong> Text HOME to 741741<br>
+        <strong>International Emergency:</strong> Contact local emergency services
+      </div>
+      <a href="tel:988" class="btn btn-danger">📞 Call 988 Now</a>
+    </div>
+    
+    <div class="consultation-options">
+      <div class="option-card">
+        <div class="option-icon">🏥</div>
+        <div class="option-title">In-Person Consultation</div>
+        <div class="option-description">Visit a local mental health clinic, hospital, or private practice for face-to-face consultation.</div>
+        <a href="#" onclick="findLocalDoctors()" class="btn btn-primary">Find Local Doctors</a>
+      </div>
+      
+      <div class="option-card">
+        <div class="option-icon">💻</div>
+        <div class="option-title">Online Therapy</div>
+        <div class="option-description">Connect with licensed therapists through secure video calls from the comfort of your home.</div>
+        <a href="#" onclick="showOnlineOptions()" class="btn btn-success">Explore Online Options</a>
+      </div>
+      
+      <div class="option-card">
+        <div class="option-icon">📞</div>
+        <div class="option-title">Phone Consultation</div>
+        <div class="option-description">Speak with mental health professionals over the phone for immediate support and guidance.</div>
+        <a href="#" onclick="showPhoneOptions()" class="btn btn-primary">Phone Support</a>
+      </div>
+      
+      <div class="option-card">
+        <div class="option-icon">👥</div>
+        <div class="option-title">Support Groups</div>
+        <div class="option-description">Join peer support groups to connect with others who understand what you're going through.</div>
+        <a href="#" onclick="showSupportGroups()" class="btn btn-success">Find Support Groups</a>
+      </div>
+    </div>
+    
+    <div class="crisis-resources">
+      <h3>🆘 Crisis Resources & Helplines</h3>
+      <div class="resource-list">
+        <div class="resource-item">
+          <strong>National Suicide Prevention Lifeline</strong><br>
+          📞 988 (US)<br>
+          Available 24/7
+        </div>
+        <div class="resource-item">
+          <strong>Crisis Text Line</strong><br>
+          📱 Text HOME to 741741<br>
+          Free, confidential support
+        </div>
+        <div class="resource-item">
+          <strong>SAMHSA National Helpline</strong><br>
+          📞 1-800-662-4357<br>
+          Treatment referrals and information
+        </div>
+        <div class="resource-item">
+          <strong>NAMI HelpLine</strong><br>
+          📞 1-800-950-6264<br>
+          Information and support
+        </div>
+      </div>
+    </div>
+    
+    <div id="additional-info" style="display: none; margin-top: 30px;">
+      <h3>📋 How to Prepare for Your Consultation</h3>
+      <ul>
+        <li>Write down your symptoms and when they occur</li>
+        <li>List any medications you're currently taking</li>
+        <li>Prepare questions about your mental health concerns</li>
+        <li>Bring your mood assessment report if helpful</li>
+        <li>Consider bringing a trusted friend or family member</li>
+      </ul>
+      
+      <h3>💡 What to Expect</h3>
+      <ul>
+        <li>Initial assessment of your mental health status</li>
+        <li>Discussion of your symptoms and concerns</li>
+        <li>Possible treatment recommendations</li>
+        <li>Development of a personalized care plan</li>
+        <li>Information about ongoing support options</li>
+      </ul>
+    </div>
+    
+    <div class="disclaimer">
+      <p><strong>Disclaimer:</strong> This mood assessment tool is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of qualified healthcare providers with questions about your mental health.</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <button onclick="showPreparationInfo()" class="btn btn-primary">📋 Preparation Tips</button>
+      <a href="/result" class="btn btn-secondary">← Back to Results</a>
+      <a href="/" class="btn btn-secondary">🏠 Home</a>
+    </div>
+  </div>
+
+  <script>
+    function findLocalDoctors() {
+      alert("To find local mental health professionals:\n\n" +
+            "1. Contact your primary care physician for referrals\n" +
+            "2. Check with your insurance provider for covered practitioners\n" +
+            "3. Use online directories like Psychology Today\n" +
+            "4. Contact local hospitals or community health centers\n" +
+            "5. Ask for recommendations from trusted friends or family");
+    }
+    
+    function showOnlineOptions() {
+      alert("Popular Online Therapy Platforms:\n\n" +
+            "• BetterHelp - Licensed therapists via video, phone, or chat\n" +
+            "• Talkspace - Text and video therapy sessions\n" +
+            "• MDLIVE - Video consultations with psychiatrists\n" +
+            "• Amwell - Online mental health services\n" +
+            "• Cerebral - Medication management and therapy\n\n" +
+            "Note: Check if these services are available in your area and covered by insurance.");
+    }
+    
+    function showPhoneOptions() {
+      alert("Phone Support Options:\n\n" +
+            "• Crisis hotlines (available 24/7)\n" +
+            "• Therapist phone sessions\n" +
+            "• Psychiatric consultation calls\n" +
+            "• Peer support phone lines\n" +
+            "• Employee Assistance Programs (EAP)\n\n" +
+            "Many insurance plans cover phone therapy sessions.");
+    }
+    
+    function showSupportGroups() {
+      alert("Finding Support Groups:\n\n" +
+            "• Local community centers\n" +
+            "• Religious organizations\n" +
+            "• Online support communities\n" +
+            "• NAMI (National Alliance on Mental Illness) groups\n" +
+            "• Hospital-based support groups\n" +
+            "• Condition-specific organizations\n\n" +
+            "Both in-person and virtual options are available.");
+    }
+    
+    function showPreparationInfo() {
+      const infoDiv = document.getElementById('additional-info');
+      if (infoDiv.style.display === 'none') {
+        infoDiv.style.display = 'block';
+        event.target.textContent = '📋 Hide Preparation Tips';
+      } else {
+        infoDiv.style.display = 'none';
+        event.target.textContent = '📋 Preparation Tips';
+      }
+    }
+  </script>
+</body>
+</html>

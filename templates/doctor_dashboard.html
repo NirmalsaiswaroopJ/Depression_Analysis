@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Dashboard - Depression Assessment System{% endblock %}
+
+{% block content %}
+<h1>Doctor Dashboard - Welcome, {{ session.full_name }}!</h1>
+
+<div class="grid grid-3 mt-2">
+    <div class="card text-center">
+        <h3 style="color: #667eea;">{{ total_patients }}</h3>
+        <p>Total Patients</p>
+    </div>
+    
+    <div class="card text-center">
+        <h3 style="color: #28a745;">{{ recent_assessments }}</h3>
+        <p>Assessments (Last 7 Days)</p>
+    </div>
+    
+    <div class="card text-center">
+        <h3 style="color: #dc3545;">
+            {% set severe_count = 0 %}
+            {% for stat in severity_stats %}
+                {% if stat.depression_severity in ['Moderately Severe', 'Severe'] %}
+                    {% set severe_count = severe_count + stat['COUNT(*)'] %}
+                {% endif %}
+            {% endfor %}
+            {{ severe_count }}
+        </h3>
+        <p>High-Risk Patients (30 Days)</p>
+    </div>
+</div>
+
+<div class="card mt-2">
+    <h3>Severity Distribution (Last 30 Days)</h3>
+    {% if severity_stats %}
+        <div class="mt-2">
+            {% for stat in severity_stats %}
+                <div style="margin: 8px 0;">
+                    <span style="display: inline-block; width: 150px;">{{ stat.depression_severity }}:</span>
+                    <span style="background-color: #667eea; color: white; padding: 2px 8px; border-radius: 12px;">
+                        {{ stat['COUNT(*)'] }} patients
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No assessment data available for the last 30 days.</p>
+    {% endif %}
+</div>
+
+<div class="card mt-2">
+    <h3>Patient Overview</h3>
+    
+    {% if patients %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                <thead>
+                    <tr style="background-color: #f8f9fa;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Patient Name</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Email</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Latest Assessment</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Depression Severity</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Score</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {{ patient.full_name or 'N/A' }}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {{ patient.email }}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {% if patient.last_assessment %}
+                                    {{ patient.last_assessment.strftime('%Y-%m-%d %H:%M') }}
+                                {% else %}
+                                    No assessments
+                                {% endif %}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {% if patient.depression_severity %}
+                                    {% set severity_color = {
+                                        'Minimal/None': '#28a745',
+                                        'Mild': '#ffc107',
+                                        'Moderate': '#fd7e14',
+                                        'Moderately Severe': '#dc3545',
+                                        'Severe': '#6f42c1'
+                                    } %}
+                                    <span style="padding: 4px 8px; background-color: {{ severity_color.get(patient.depression_severity, '#6c757d') }}; color: white; border-radius: 12px; font-size: 0.9em;">
+                                        {{ patient.depression_severity }}
+                                    </span>
+                                {% else %}
+                                    <span style="color: #6c757d;">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {% if patient.depression_score is not none %}
+                                    {{ "%.1f"|format(patient.depression_score) }}/100
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn" style="padding: 6px 12px; font-size: 0.9em;">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="mt-2">No patients found in the system.</p>
+    {% endif %}
+</div>
+
+<div class="card mt-2">
+    <h3>Clinical Notes</h3>
+    <div class="mt-2" style="background-color: #fff3cd; padding: 1rem; border-radius: 4px; border-left: 4px solid #ffc107;">
+        <h4>Important Reminders:</h4>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li>This system provides screening results only, not clinical diagnoses</li>
+            <li>Patients with "Moderately Severe" or "Severe" ratings should be prioritized for follow-up</li>
+            <li>Always consider clinical judgment alongside system assessments</li>
+            <li>Encourage patients showing persistent negative emotions to seek professional help</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

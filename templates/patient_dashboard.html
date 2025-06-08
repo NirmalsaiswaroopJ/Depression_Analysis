@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - Depression Assessment System{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ session.full_name }}!</h1>
+
+<div class="grid grid-2 mt-2">
+    <div class="card">
+        <h3>Quick Actions</h3>
+        <div class="mt-2">
+            <a href="{{ url_for('start') }}" class="btn">Start New Assessment</a>
+        </div>
+        <p class="mt-2">Take a new facial emotion assessment to monitor your mental health status.</p>
+    </div>
+    
+    <div class="card">
+        <h3>Assessment Statistics</h3>
+        <p><strong>Total Assessments:</strong> {{ assessments|length }}</p>
+        {% if assessments %}
+            <p><strong>Latest Assessment:</strong> {{ assessments[0].created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Latest Severity:</strong> {{ assessments[0].depression_severity }}</p>
+        {% else %}
+            <p>No assessments taken yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-2">
+    <h3>Assessment History</h3>
+    
+    {% if assessments %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                <thead>
+                    <tr style="background-color: #f8f9fa;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Date</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Dominant Emotion</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Depression Severity</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Score</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Image Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assessment in assessments %}
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {{ assessment.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                <span style="padding: 4px 8px; background-color: #e3f2fd; border-radius: 12px; font-size: 0.9em;">
+                                    {{ assessment.dominant_emotion.title() }}
+                                </span>
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {% set severity_color = {
+                                    'Minimal/None': '#28a745',
+                                    'Mild': '#ffc107',
+                                    'Moderate': '#fd7e14',
+                                    'Moderately Severe': '#dc3545',
+                                    'Severe': '#6f42c1'
+                                } %}
+                                <span style="padding: 4px 8px; background-color: {{ severity_color.get(assessment.depression_severity, '#6c757d') }}; color: white; border-radius: 12px; font-size: 0.9em;">
+                                    {{ assessment.depression_severity }}
+                                </span>
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {{ "%.1f"|format(assessment.depression_score) }}/100
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+                                {{ assessment.image_quality }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="mt-2">No assessments found. <a href="{{ url_for('start') }}">Take your first assessment</a> to get started.</p>
+    {% endif %}
+</div>
+
+<div class="card mt-2">
+    <h3>Mental Health Resources</h3>
+    <div class="grid grid-2 mt-2">
+        <div>
+            <h4>Crisis Support</h4>
+            <p><strong>988 Suicide & Crisis Lifeline:</strong> Call or text 988</p>
+            <p><strong>Crisis Text Line:</strong> Text HOME to 741741</p>
+        </div>
+        <div>
+            <h4>Professional Help</h4>
+            <p>Consider speaking with a mental health professional if you notice persistent negative emotions.</p>
+            <p>Your doctor can provide referrals to qualified therapists and counselors.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

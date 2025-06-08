@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Results - Depression Assessment System{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+    <h1>Assessment Results</h1>
+    <p class="mt-2">Analysis completed on {{ analysis.get('timestamp', 'now') }}</p>
+</div>
+
+<div class="grid grid-2 mt-2">
+    <div class="card">
+        <h3>Dominant Emotion</h3>
+        <div class="text-center mt-2">
+            <div style="font-size: 3rem; margin: 1rem 0;">
+                {% set emotion_icons = {
+                    'happy': '😊',
+                    'sad': '😢',
+                    'angry': '😠',
+                    'surprise': '😮',
+                    'fear': '😨',
+                    'disgust': '🤢',
+                    'neutral': '😐'
+                } %}
+                {{ emotion_icons.get(mood, '😐') }}
+            </div>
+            <h2 style="color: #667eea; text-transform: capitalize;">{{ mood }}</h2>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Depression Assessment</h3>
+        <div class="text-center mt-2">
+            <h2 style="color: {% if analysis.depression_severity in ['Moderately Severe', 'Severe'] %}#dc3545{% elif analysis.depression_severity == 'Moderate' %}#fd7e14{% elif analysis.depression_severity == 'Mild' %}#ffc107{% else %}#28a745{% endif %};">
+                {{ analysis.depression_severity }}
+            </h2>
+            <p><strong>Score:</strong> {{ "%.1f"|format(analysis.depression_score) }}/100</p>
+            <p><strong>Image Quality:</strong> {{ analysis.image_quality }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-2">
+    <h3>Detailed Emotion Analysis</h3>
+    <div class="mt-2">
+        {% for emotion, score in analysis.emotion.items() %}
+            <div style="margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="text-transform: capitalize; font-weight: bold;">{{ emotion }}</span>
+                    <span>{{ "%.1f"|format(score) }}%</span>
+                </div>
+                <div style="background-color: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="background-color: #667eea; height: 100%; width: {{ score }}%; transition: width 0.5s ease;"></div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if analysis.depression_severity in ['Moderate', 'Moderately Severe', 'Severe'] %}
+<div class="card mt-2" style="border-left: 4px solid #dc3545;">
+    <h3 style="color: #dc3545;">⚠️ Important Notice</h3>
+    <p class="mt-2">
+        Your assessment indicates {{ analysis.depression_severity.lower() }} depression symptoms. 
+        We strongly recommend consulting with a mental health professional for proper evaluation and support.
+    </p>
+    
+    <div class="mt-2">
+        <h4>Immediate Resources:</h4>
+        <ul style="margin-left: 1.5rem;">
+            <li><strong>Crisis Support:</strong> Call or text 988 (Suicide & Crisis Lifeline)</li>
+            <li><strong>Crisis Text Line:</strong> Text HOME to 741741</li>
+            <li><strong>Emergency:</strong> Call 911 if in immediate danger</li>
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mt-2">
+    <h3>Recommendations</h3>
+    <div class="mt-2">
+        {% if analysis.depression_severity == 'Minimal/None' %}
+            <ul style="margin-left: 1.5rem;">
+                <li>Continue maintaining good mental health habits</li>
+                <li>Regular exercise and healthy sleep schedule</li>
+                <li>Stay connected with friends and family</li>
+                <li>Monitor your mood regularly</li>
+            </ul>
+        {% elif analysis.depression_severity == 'Mild' %}
+            <ul style="margin-left: 1.5rem;">
+                <li>Consider lifestyle changes: regular exercise, healthy diet</li>
+                <li>Practice stress management techniques</li>
+                <li>Maintain social connections</li>
+                <li>Monitor symptoms and seek help if they worsen</li>
+                <li>Consider counseling or therapy</li>
+            </ul>
+        {% else %}
+            <ul style="margin-left: 1.5rem;">
+                <li><strong>Seek professional help immediately</strong></li>
+                <li>Contact your healthcare provider</li>
+                <li>Consider therapy or counseling</li>
+                <li>Maintain regular sleep and exercise routines</li>
+                <li>Stay connected with supportive people</li>
+                <li>Avoid alcohol and drugs</li>
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-2">
+    <h3>Detailed Report</h3>
+    {% if report_content %}
+        <div class="mt-2">
+            <textarea readonly style="width: 100%; height: 300px; font-family: monospace; font-size: 0.9em; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">{{ report_content }}</textarea>
+        </div>
+        <div class="mt-2">
+            <a href="{{ url_for('download_report') }}" class="btn">Download Full Report</a>
+        </div>
+    {% else %}
+        <p>Report not available.</p>
+    {% endif %}
+</div>
+
+<div class="text-center mt-2">
+    <a href="{{ url_for('patient_dashboard') }}" class="btn">Back to Dashboard</a>
+    <a href="{{ url_for('start') }}" class="btn btn-secondary">Take Another Assessment</a>
+</div>
+
+<div class="card mt-2">
+    <h3>Disclaimer</h3>
+    <p style="font-size: 0.9em; color: #6c757d;">
+        This assessment is a screening tool only and should not replace professional medical diagnosis. 
+        The results are based on facial expression analysis and may not reflect your complete mental health status. 
+        Always consult with qualified healthcare professionals for accurate diagnosis and treatment.
+    </p>
+</div>
+{% endblock %}
